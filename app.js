@@ -35,15 +35,15 @@ app.all(`*`, async (req, res) => {
   let url = `https://api.openai.com${req.url}`;
   // 从 header 中取得 Authorization': 'Bearer 后的 token
   const token = req.headers.authorization?.split(' ')[1];
-  if( !token ) return res.status(403).send('Forbidden');
+  if( !token ) return res.status(403).send('Forbidden, Empty token.');
 
   const openai_key = process.env.OPENAI_KEY||token.split(':')[0];
-  if( !openai_key ) return res.status(403).send('Forbidden');
+  if( !openai_key ) return res.status(403).send('Forbidden, Invalid key.');
   if( openai_key.startsWith("fk") ) url = url.replaceAll( "api.openai.com", "openai.api2d.net" );
 
   const proxy_key = token.split(':')[1]||"";  
   if( process.env.PROXY_KEY && proxy_key !== process.env.PROXY_KEY ) 
-    return res.status(403).send('Forbidden');
+    return res.status(403).send('Forbidden, Auth failed.');
 
   // console.log( req );
   const { moderation, moderation_level, ...restBody } = req.body;
